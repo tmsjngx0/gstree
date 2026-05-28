@@ -2,6 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
+from .renderer import render_text_report
 from .scanner import scan_workspace
 
 
@@ -20,6 +21,5 @@ def main() -> int:
     if args.json:
         print(json.dumps({"root": str(root), "repos": [repo.to_dict() for repo in repos]}, indent=2))
     else:
-        for repo in repos:
-            print(f"{repo.path} [{repo.branch}]")
+        print(render_text_report(root, repos))
     return 0
