@@ -6,23 +6,27 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from helpers import init_repo
+
 
 class GstreeCliJsonTest(unittest.TestCase):
+    def _run_gstree(self, *args: str) -> subprocess.CompletedProcess[str]:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
+        return subprocess.run(
+            [sys.executable, "-m", "gstree", *args],
+            check=True,
+            capture_output=True,
+            text=True,
+            env=env,
+        )
+
     def test_json_output_lists_git_repositories_under_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            repo = root / "app"
-            subprocess.run(["git", "init", "-b", "main", str(repo)], check=True, capture_output=True, text=True)
+            repo = init_repo(root / "app")
 
-            env = os.environ.copy()
-            env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
-            result = subprocess.run(
-                [sys.executable, "-m", "gstree", "--json", str(root)],
-                check=True,
-                capture_output=True,
-                text=True,
-                env=env,
-            )
+            result = self._run_gstree("--json", str(root))
 
             payload = json.loads(result.stdout)
             self.assertEqual(payload["root"], str(root.resolve()))
@@ -38,6 +42,26 @@ class GstreeCliJsonTest(unittest.TestCase):
                         "ahead": 0,
                         "behind": 0,
                     }
+                ],
+            )
+
+    def test_text_output_renders_tree_and_summary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "workspace"
+            root.mkdir()
+            init_repo(root / "app")
+            dirty_repo = init_repo(root / "nested" / "service")
+            (dirty_repo / "dirty.txt").write_text("dirty\n")
+
+            result = self._run_gstree(str(root))
+
+            self.assertEqual(
+                result.stdout.strip().splitlines(),
+                [
+                    "workspace",
+                    "├── app [main] clean",
+                    "└── nested/service [main] dirty",
+                    "2 repos, 1 dirty",
                 ],
             )
 
