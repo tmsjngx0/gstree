@@ -2,15 +2,17 @@ import argparse
 import json
 from pathlib import Path
 
+from . import __version__
 from .renderer import render_text_report
 from .scanner import scan_workspace
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gstree")
-    parser.add_argument("path", nargs="?", default=".")
-    parser.add_argument("-d", "--depth", type=int, default=2)
-    parser.add_argument("-j", "--json", action="store_true")
+    parser.add_argument("path", nargs="?", default=".", help="Root directory to scan")
+    parser.add_argument("-d", "--depth", type=int, default=2, help="Maximum scan depth")
+    parser.add_argument("-j", "--json", action="store_true", help="Emit JSON instead of tree output")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser
 
 
