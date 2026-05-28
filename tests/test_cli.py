@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from gstree import __version__
 from helpers import init_repo
 
 
@@ -20,6 +21,11 @@ class GstreeCliJsonTest(unittest.TestCase):
             text=True,
             env=env,
         )
+
+    def test_version_output_reports_current_package_version(self) -> None:
+        result = self._run_gstree("--version")
+
+        self.assertEqual(result.stdout, f"gstree {__version__}\n")
 
     def test_json_output_lists_git_repositories_under_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
