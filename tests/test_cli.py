@@ -86,6 +86,25 @@ class GstreeCliJsonTest(unittest.TestCase):
                 ],
             )
 
+    def test_dirty_flag_hides_clean_repositories(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "workspace"
+            root.mkdir()
+            init_repo(root / "app")
+            dirty_repo = init_repo(root / "nested" / "service")
+            (dirty_repo / "dirty.txt").write_text("dirty\n")
+
+            result = self._run_gstree("--dirty", str(root))
+
+            self.assertEqual(
+                result.stdout.strip().splitlines(),
+                [
+                    "workspace",
+                    "└── nested/service [main] ?1",
+                    "1 repos, 1 dirty",
+                ],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
