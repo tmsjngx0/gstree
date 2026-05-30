@@ -13,7 +13,7 @@ def render_text_report(root: Path, repos: list[RepoStatus]) -> str:
         for index, repo in enumerate(repos):
             connector = "└──" if index == len(repos) - 1 else "├──"
             relative_path = Path(repo.path).resolve().relative_to(root.resolve())
-            state = "dirty" if repo.dirty else "clean"
+            state = _format_repo_state(repo)
             lines.append(f"{connector} {relative_path.as_posix()} [{repo.branch}] {state}")
     else:
         lines.append("└── (no git repos found)")
@@ -21,3 +21,18 @@ def render_text_report(root: Path, repos: list[RepoStatus]) -> str:
     dirty_count = sum(1 for repo in repos if repo.dirty)
     lines.append(f"{len(repos)} repos, {dirty_count} dirty")
     return "\n".join(lines)
+
+
+def _format_repo_state(repo: RepoStatus) -> str:
+    tokens: list[str] = []
+    if repo.staged:
+        tokens.append(f"+{repo.staged}")
+    if repo.modified:
+        tokens.append(f"~{repo.modified}")
+    if repo.untracked:
+        tokens.append(f"?{repo.untracked}")
+    if repo.ahead:
+        tokens.append(f"↑{repo.ahead}")
+    if repo.behind:
+        tokens.append(f"↓{repo.behind}")
+    return " ".join(tokens) if tokens else "clean"

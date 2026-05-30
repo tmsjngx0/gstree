@@ -66,7 +66,7 @@ class GstreeCliJsonTest(unittest.TestCase):
                 [
                     "workspace",
                     "├── app [main] clean",
-                    "└── nested/service [main] dirty",
+                    "└── nested/service [main] ?1",
                     "2 repos, 1 dirty",
                 ],
             )
@@ -81,7 +81,7 @@ class GstreeCliJsonTest(unittest.TestCase):
                 result.stdout.strip().splitlines(),
                 [
                     "workspace",
-                    "└── tracked [main] +1 ~2 ?1 ↑1 ↓1",
+                    "└── tracked [main] +1 ~1 ?1 ↑1 ↓1",
                     "1 repos, 1 dirty",
                 ],
             )

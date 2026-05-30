@@ -62,14 +62,38 @@ def create_tracking_repo(tmp_root: Path) -> tuple[Path, Path]:
 
 
 def create_repo_with_status_tokens(tmp_root: Path) -> tuple[Path, Path]:
-    workspace, tracked = create_tracking_repo(tmp_root)
+    workspace = tmp_root / "workspace"
+    workspace.mkdir()
 
-    commit_file(tracked, "staged.txt", "staged\n", "seed staged file")
-    (tracked / "staged.txt").write_text("staged changed\n")
-    git("add", "staged.txt", cwd=tracked)
+    remote = tmp_root / "remote.git"
+    git("init", "--bare", str(remote))
+
+    seed = tmp_root / "seed"
+    init_repo(seed)
+    commit_file(seed, "README.md", "seed\n", "initial commit")
+    commit_file(seed, "tracked.txt", "tracked\n", "tracked baseline")
+    git("remote", "add", "origin", str(remote), cwd=seed)
+    git("push", "-u", "origin", "main", cwd=seed)
+
+    tracked = workspace / "tracked"
+    git("clone", str(remote), str(tracked))
+    configure_identity(tracked)
+
+    other = tmp_root / "other"
+    git("clone", str(remote), str(other))
+    configure_identity(other)
+
+    commit_file(tracked, "local.txt", "local\n", "local change")
+    commit_file(other, "remote.txt", "remote\n", "remote change")
+    git("push", cwd=other)
+    git("fetch", "origin", cwd=tracked)
+
+    tracked_file = tracked / "tracked.txt"
+    tracked_file.write_text("tracked staged change\n")
+    git("add", "tracked.txt", cwd=tracked)
 
     readme = tracked / "README.md"
-    readme.write_text("seed changed\n")
+    readme.write_text("seed modified\n")
 
     (tracked / "untracked.txt").write_text("untracked\n")
     return workspace, tracked

@@ -10,6 +10,14 @@ class RepoStatus:
     tracking: bool
     ahead: int
     behind: int
+    staged: int = 0
+    modified: int = 0
+    untracked: int = 0
 
     def to_dict(self) -> dict[str, object]:
-        return asdict(self)
+        payload = asdict(self)
+        if not any((self.staged, self.modified, self.untracked)):
+            payload.pop("staged")
+            payload.pop("modified")
+            payload.pop("untracked")
+        return payload
