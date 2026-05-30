@@ -59,3 +59,17 @@ def create_tracking_repo(tmp_root: Path) -> tuple[Path, Path]:
 
     (tracked / "dirty.txt").write_text("dirty\n")
     return workspace, tracked
+
+
+def create_repo_with_status_tokens(tmp_root: Path) -> tuple[Path, Path]:
+    workspace, tracked = create_tracking_repo(tmp_root)
+
+    commit_file(tracked, "staged.txt", "staged\n", "seed staged file")
+    (tracked / "staged.txt").write_text("staged changed\n")
+    git("add", "staged.txt", cwd=tracked)
+
+    readme = tracked / "README.md"
+    readme.write_text("seed changed\n")
+
+    (tracked / "untracked.txt").write_text("untracked\n")
+    return workspace, tracked

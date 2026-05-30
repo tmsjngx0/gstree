@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 from gstree import __version__
-from helpers import init_repo
+from helpers import create_repo_with_status_tokens, init_repo
 
 
 class GstreeCliJsonTest(unittest.TestCase):
@@ -68,6 +68,21 @@ class GstreeCliJsonTest(unittest.TestCase):
                     "├── app [main] clean",
                     "└── nested/service [main] dirty",
                     "2 repos, 1 dirty",
+                ],
+            )
+
+    def test_text_output_includes_compact_status_tokens(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            workspace, _tracked = create_repo_with_status_tokens(Path(tmpdir))
+
+            result = self._run_gstree(str(workspace))
+
+            self.assertEqual(
+                result.stdout.strip().splitlines(),
+                [
+                    "workspace",
+                    "└── tracked [main] +1 ~2 ?1 ↑1 ↓1",
+                    "1 repos, 1 dirty",
                 ],
             )
 
