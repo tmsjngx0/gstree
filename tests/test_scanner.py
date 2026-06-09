@@ -35,6 +35,23 @@ class GstreeScannerTest(unittest.TestCase):
             self.assertEqual(repo.ahead, 1)
             self.assertEqual(repo.behind, 1)
 
+    def test_scan_workspace_includes_nested_repo_inside_repo_tree(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "workspace"
+            root.mkdir()
+            init_repo(root / "app")
+            init_repo(root / "app" / "vendor" / "module")
+
+            repos = scan_workspace(root, max_depth=4)
+
+            self.assertEqual(
+                [repo.path for repo in repos],
+                [
+                    str((root / "app").resolve()),
+                    str((root / "app" / "vendor" / "module").resolve()),
+                ],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
