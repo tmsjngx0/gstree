@@ -8,6 +8,19 @@ and gstree adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 ## [Unreleased]
 
 
+## [0.1.2] - 2026-06-09
+
+### Added
+
+- `--fetch` flag — runs `git fetch --all` in each repo before collecting status
+- Parallel status collection via `ThreadPoolExecutor` for multi-repo speedup
+
+### Fixed
+
+- HTTPS remotes no longer hang on credential prompt (`GIT_TERMINAL_PROMPT=0`)
+- Ctrl+C prints clean `gstree: interrupted` instead of traceback
+- Git subprocesses time out after 30 seconds instead of hanging indefinitely
+
 ## [0.1.1] - 2026-06-09
 
 ### Added
@@ -30,6 +43,7 @@ and gstree adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Zero third-party runtime dependencies (Python stdlib only)
 - `uv tool install` / `uv tool upgrade` packaging
 
-[Unreleased]: https://github.com/tmsjngx0/gstree/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tmsjngx0/gstree/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/tmsjngx0/gstree/releases/tag/v0.1.2
 [0.1.1]: https://github.com/tmsjngx0/gstree/releases/tag/v0.1.1
 [0.1.0]: https://github.com/tmsjngx0/gstree/releases/tag/v0.1.0
