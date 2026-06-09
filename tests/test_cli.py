@@ -14,6 +14,7 @@ class GstreeCliJsonTest(unittest.TestCase):
     def _run_gstree(self, *args: str) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1] / "src")
+        env["NO_COLOR"] = "1"
         return subprocess.run(
             [sys.executable, "-m", "gstree", *args],
             check=True,
@@ -66,7 +67,8 @@ class GstreeCliJsonTest(unittest.TestCase):
                 [
                     "workspace",
                     "├── app [main] clean",
-                    "└── nested/service [main] ?1",
+                    "└── nested/",
+                    "    └── service [main] ?1",
                     "2 repos, 1 dirty",
                 ],
             )
@@ -100,7 +102,8 @@ class GstreeCliJsonTest(unittest.TestCase):
                 result.stdout.strip().splitlines(),
                 [
                     "workspace",
-                    "└── nested/service [main] ?1",
+                    "└── nested/",
+                    "    └── service [main] ?1",
                     "1 repos, 1 dirty",
                 ],
             )
