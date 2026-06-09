@@ -17,9 +17,9 @@ def scan_workspace(root: Path, max_depth: int) -> list[RepoStatus]:
 
 
 def _scan_directory(path: Path, depth: int, max_depth: int, repos: list[RepoStatus]) -> None:
-    if _is_git_repo(path):
+    is_repo = _is_git_repo(path)
+    if is_repo:
         repos.append(collect_repo_status(path))
-        return
 
     if depth >= max_depth:
         return
