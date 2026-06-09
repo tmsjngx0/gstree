@@ -40,22 +40,11 @@ PYTHONPATH=src python3 -m gstree --json ~/source
 
 ## Install
 
-Clone the repo into your normal source workspace:
+Clone the repo to the XDG data directory and install with uv:
 
 ```bash
-git clone git@github.com:tmsjngx0/gstree.git ~/source/gstree
-```
-
-Install the tool from that checkout:
-
-```bash
-uv tool install ~/source/gstree
-```
-
-For an editable development install:
-
-```bash
-uv tool install --editable ~/source/gstree
+git clone git@github.com:tmsjngx0/gstree.git ~/.local/share/gstree
+uv tool install ~/.local/share/gstree
 ```
 
 Verify the installed binary:
@@ -66,16 +55,23 @@ gstree ~/source
 gstree --dirty ~/source
 ```
 
-If `uv` warns that the tool bin directory is not on your `PATH`, add the
-reported directory to `PATH` or run `uv tool update-shell`.
+For an editable development install:
+
+```bash
+uv tool install --editable ~/.local/share/gstree
+```
 
 ## Upgrade
 
-After pulling new changes into the checkout, reinstall the tool environment:
+```bash
+gstree upgrade
+```
+
+This pulls the latest source from `~/.local/share/gstree` and reinstalls the
+tool. Override the repo path with the `GSTREE_REPO_PATH` environment variable:
 
 ```bash
-git -C ~/source/gstree pull
-uv tool upgrade gstree --reinstall
+GSTREE_REPO_PATH=/custom/path/gstree gstree upgrade
 ```
 
 ## Tests
