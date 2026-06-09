@@ -40,16 +40,22 @@ PYTHONPATH=src python3 -m gstree --json ~/source
 
 ## Install
 
-Install the tool from the local checkout:
+Clone the repo into your normal source workspace:
 
 ```bash
-uv tool install /data/source/gstree-mgmt/gstree
+git clone git@github.com:tmsjngx0/gstree.git ~/source/gstree
+```
+
+Install the tool from that checkout:
+
+```bash
+uv tool install ~/source/gstree
 ```
 
 For an editable development install:
 
 ```bash
-uv tool install --editable /data/source/gstree-mgmt/gstree
+uv tool install --editable ~/source/gstree
 ```
 
 Verify the installed binary:
@@ -68,7 +74,7 @@ reported directory to `PATH` or run `uv tool update-shell`.
 After pulling new changes into the checkout, reinstall the tool environment:
 
 ```bash
-git -C /data/source/gstree-mgmt/gstree pull
+git -C ~/source/gstree pull
 uv tool upgrade gstree --reinstall
 ```
 
