@@ -1,14 +1,21 @@
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from . import __version__
-from .renderer import render_text_report
-from .scanner import scan_workspace
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="gstree")
+    parser = argparse.ArgumentParser(
+        prog="gstree",
+        description="Workspace git scanner and manager",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=(
+            "commands:\n"
+            "  upgrade  Pull latest source and reinstall gstree\n"
+        ),
+    )
     parser.add_argument("path", nargs="?", default=".", help="Root directory to scan")
     parser.add_argument("-d", "--depth", type=int, default=2, help="Maximum scan depth")
     parser.add_argument("-j", "--json", action="store_true", help="Emit JSON instead of tree output")
@@ -18,8 +25,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main() -> int:
+    if len(sys.argv) > 1 and sys.argv[1] == "upgrade":
+        from .upgrade import cmd_upgrade
+
+        return cmd_upgrade()
+
     args = build_parser().parse_args()
     root = Path(args.path).resolve()
+
+    from .renderer import render_text_report
+    from .scanner import scan_workspace
+
     repos = scan_workspace(root, args.depth)
     if args.dirty:
         repos = [repo for repo in repos if repo.dirty]
