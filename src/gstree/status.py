@@ -7,6 +7,7 @@ from pathlib import Path
 from .models import RepoStatus
 
 _GIT_ENV = {**os.environ, 'GIT_TERMINAL_PROMPT': '0'}
+_GIT_TIMEOUT = 30
 
 
 def collect_repo_status(path: Path, fetch: bool = False) -> RepoStatus:
@@ -60,18 +61,23 @@ def _git(path: Path, *args: str) -> str:
         capture_output=True,
         text=True,
         env=_GIT_ENV,
+        timeout=_GIT_TIMEOUT,
     )
     return result.stdout
 
 
 def _git_optional(path: Path, *args: str) -> str | None:
-    result = subprocess.run(
-        ['git', '-C', str(path), *args],
-        check=False,
-        capture_output=True,
-        text=True,
-        env=_GIT_ENV,
-    )
-    if result.returncode != 0:
+    try:
+        result = subprocess.run(
+            ['git', '-C', str(path), *args],
+            check=False,
+            capture_output=True,
+            text=True,
+            env=_GIT_ENV,
+            timeout=_GIT_TIMEOUT,
+        )
+        if result.returncode != 0:
+            return None
+        return result.stdout.strip()
+    except (subprocess.TimeoutExpired, OSError):
         return None
-    return result.stdout.strip()

@@ -37,7 +37,12 @@ def main() -> int:
     from .renderer import render_text_report
     from .scanner import scan_workspace
 
-    repos = scan_workspace(root, args.depth, args.fetch)
+    try:
+        repos = scan_workspace(root, args.depth, args.fetch)
+    except KeyboardInterrupt:
+        sys.stderr.write("gstree: interrupted\n")
+        return 130
+
     if args.dirty:
         repos = [repo for repo in repos if repo.dirty]
     if args.json:
