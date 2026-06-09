@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 
 from .models import RepoStatus
+
+_GIT_ENV = {**os.environ, 'GIT_TERMINAL_PROMPT': '0'}
 
 
 def collect_repo_status(path: Path, fetch: bool = False) -> RepoStatus:
@@ -56,6 +59,7 @@ def _git(path: Path, *args: str) -> str:
         check=True,
         capture_output=True,
         text=True,
+        env=_GIT_ENV,
     )
     return result.stdout
 
@@ -66,6 +70,7 @@ def _git_optional(path: Path, *args: str) -> str | None:
         check=False,
         capture_output=True,
         text=True,
+        env=_GIT_ENV,
     )
     if result.returncode != 0:
         return None
