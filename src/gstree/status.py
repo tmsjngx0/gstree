@@ -6,7 +6,9 @@ from pathlib import Path
 from .models import RepoStatus
 
 
-def collect_repo_status(path: Path) -> RepoStatus:
+def collect_repo_status(path: Path, fetch: bool = False) -> RepoStatus:
+    if fetch:
+        _git_optional(path, 'fetch', '--all')
     status_lines = _git(path, 'status', '--porcelain').splitlines()
     staged, modified, untracked = _count_worktree_changes(status_lines)
     tracking_ref = _git_optional(path, 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}')

@@ -20,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-d", "--depth", type=int, default=2, help="Maximum scan depth")
     parser.add_argument("-j", "--json", action="store_true", help="Emit JSON instead of tree output")
     parser.add_argument("--dirty", action="store_true", help="Show only dirty repositories")
+    parser.add_argument("--fetch", action="store_true", help="Run git fetch --all in each repo before collecting status")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser
 
@@ -36,7 +37,7 @@ def main() -> int:
     from .renderer import render_text_report
     from .scanner import scan_workspace
 
-    repos = scan_workspace(root, args.depth)
+    repos = scan_workspace(root, args.depth, args.fetch)
     if args.dirty:
         repos = [repo for repo in repos if repo.dirty]
     if args.json:

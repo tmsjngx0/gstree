@@ -9,17 +9,17 @@ from .status import collect_repo_status
 SKIP_DIRS = {'.git', '__pycache__', '.venv'}
 
 
-def scan_workspace(root: Path, max_depth: int) -> list[RepoStatus]:
+def scan_workspace(root: Path, max_depth: int, fetch: bool = False) -> list[RepoStatus]:
     resolved_root = root.resolve()
     repos: list[RepoStatus] = []
-    _scan_directory(resolved_root, 0, max_depth, repos)
+    _scan_directory(resolved_root, 0, max_depth, repos, fetch)
     return sorted(repos, key=lambda repo: repo.path)
 
 
-def _scan_directory(path: Path, depth: int, max_depth: int, repos: list[RepoStatus]) -> None:
+def _scan_directory(path: Path, depth: int, max_depth: int, repos: list[RepoStatus], fetch: bool = False) -> None:
     is_repo = _is_git_repo(path)
     if is_repo:
-        repos.append(collect_repo_status(path))
+        repos.append(collect_repo_status(path, fetch))
 
     if depth >= max_depth:
         return
@@ -29,7 +29,7 @@ def _scan_directory(path: Path, depth: int, max_depth: int, repos: list[RepoStat
             continue
         if child.name in SKIP_DIRS:
             continue
-        _scan_directory(child, depth + 1, max_depth, repos)
+        _scan_directory(child, depth + 1, max_depth, repos, fetch)
 
 
 def _is_git_repo(path: Path) -> bool:

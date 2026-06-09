@@ -109,5 +109,13 @@ class GstreeCliJsonTest(unittest.TestCase):
             )
 
 
+    def test_fetch_flag_is_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            init_repo(root / "app")
+            result = self._run_gstree("--fetch", str(root))
+            self.assertIn("app", result.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
