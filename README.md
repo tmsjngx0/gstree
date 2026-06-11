@@ -70,8 +70,8 @@ gstree --fetch ~/source
 gstree --json ~/source
 gstree -j ~/source
 
-# Limit scan depth (default: unlimited)
-gstree --depth 2 ~/source
+# Limit scan depth (default: 2)
+gstree --depth 3 ~/source
 
 # Check version
 gstree --version
