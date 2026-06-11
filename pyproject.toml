@@ -27,6 +27,9 @@ Homepage = "https://github.com/tmsjngx0/gstree"
 Repository = "https://github.com/tmsjngx0/gstree"
 Changelog = "https://github.com/tmsjngx0/gstree/blob/main/CHANGELOG.md"
 
+[project.optional-dependencies]
+dev = ["ruff"]
+
 [project.scripts]
 gstree = "gstree.cli:main"
 
