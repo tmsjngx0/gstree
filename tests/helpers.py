@@ -36,7 +36,7 @@ def create_tracking_repo(tmp_root: Path) -> tuple[Path, Path]:
     workspace.mkdir()
 
     remote = tmp_root / "remote.git"
-    git("init", "--bare", str(remote))
+    git("init", "--bare", "-b", "main", str(remote))
 
     seed = tmp_root / "seed"
     init_repo(seed)
@@ -66,7 +66,7 @@ def create_repo_with_status_tokens(tmp_root: Path) -> tuple[Path, Path]:
     workspace.mkdir()
 
     remote = tmp_root / "remote.git"
-    git("init", "--bare", str(remote))
+    git("init", "--bare", "-b", "main", str(remote))
 
     seed = tmp_root / "seed"
     init_repo(seed)
