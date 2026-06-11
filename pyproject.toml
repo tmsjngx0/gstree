@@ -7,7 +7,25 @@ name = "gstree"
 dynamic = ["version"]
 description = "Workspace git tree scanner"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.12"
+authors = [
+  {name = "tmsjngx0", email = "tmsjngx0@users.noreply.github.com"},
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Version Control :: Git",
+]
+
+[project.urls]
+Homepage = "https://github.com/tmsjngx0/gstree"
+Repository = "https://github.com/tmsjngx0/gstree"
+Changelog = "https://github.com/tmsjngx0/gstree/blob/main/CHANGELOG.md"
 
 [project.scripts]
 gstree = "gstree.cli:main"
