@@ -63,8 +63,15 @@ gstree ~/source
 # Show only repos with changes
 gstree --dirty ~/source
 
-# JSON output
+# Fetch from remotes before showing status
+gstree --fetch ~/source
+
+# JSON output (for scripting)
 gstree --json ~/source
+gstree -j ~/source
+
+# Limit scan depth (default: unlimited)
+gstree --depth 2 ~/source
 
 # Check version
 gstree --version
