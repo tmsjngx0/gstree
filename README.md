@@ -1,81 +1,89 @@
 # gstree
 
-`gstree` is a Python CLI that scans a workspace for git repositories and shows
-their status either as JSON or as a compact tree view.
+[![CI](https://github.com/tmsjngx0/gstree/actions/workflows/ci.yml/badge.svg)](https://github.com/tmsjngx0/gstree/actions/workflows/ci.yml)
 
-## Current MVP
+`gstree` scans a workspace directory for git repositories and shows their status as a compact tree.
 
-- Recursive repository discovery with depth limits
-- JSON output for downstream tools
-- Default text/tree output with a dirty summary
-- Compact status tokens for staged, modified, untracked, ahead, and behind state
-- `--dirty` filtering for attention-only views
-- Branch, dirty, tracking, ahead, and behind metadata
-- Zero third-party runtime dependencies
-- Direct `--version` output for installed binaries
+```
+source
+├── api          [main] ~2 ?1
+├── frontend     [main] +3 ~1
+├── infra        [main] clean
+│   └── modules  [main] ↓2
+└── tools        [feat/login] ~1 ↑1
+```
+
+## Features
+
+- Tree view of all git repos in a directory (including submodules)
+- Compact status tokens — see at a glance what needs attention
+- `--dirty` flag to show only repos with uncommitted changes
+- JSON output for scripting and downstream tools
+- Zero runtime dependencies
+- `gstree upgrade` for self-updating installs
 
 ## Status Tokens
 
-- `+N` staged changes
-- `~N` modified tracked files
-- `?N` untracked files
-- `↑N` commits ahead of upstream
-- `↓N` commits behind upstream
-
-## Run From Checkout
-
-```bash
-uv run gstree ~/source
-uv run gstree --dirty ~/source
-uv run gstree --json ~/source
-```
-
-If you are not using `uv run`, the direct module path still works:
-
-```bash
-PYTHONPATH=src python3 -m gstree ~/source
-PYTHONPATH=src python3 -m gstree --dirty ~/source
-PYTHONPATH=src python3 -m gstree --json ~/source
-```
+| Token | Meaning |
+|-------|---------|
+| `+N`  | N staged changes |
+| `~N`  | N modified tracked files |
+| `?N`  | N untracked files |
+| `↑N`  | N commits ahead of upstream |
+| `↓N`  | N commits behind upstream |
+| `clean` | nothing to do |
 
 ## Install
 
-Clone the repo to the XDG data directory and install with uv:
+**With pip:**
 
 ```bash
-git clone git@github.com:tmsjngx0/gstree.git ~/.local/share/gstree
+pip install gstree
+```
+
+**With uvx (no install, run directly):**
+
+```bash
+uvx gstree ~/source
+```
+
+**From source:**
+
+```bash
+git clone https://github.com/tmsjngx0/gstree.git ~/.local/share/gstree
 uv tool install ~/.local/share/gstree
 ```
 
-Verify the installed binary:
+## Usage
 
 ```bash
-gstree --version
+# Show all repos
 gstree ~/source
+
+# Show only repos with changes
 gstree --dirty ~/source
-```
 
-For an editable development install:
+# JSON output
+gstree --json ~/source
 
-```bash
-uv tool install --editable ~/.local/share/gstree
+# Check version
+gstree --version
 ```
 
 ## Upgrade
+
+For source installs:
 
 ```bash
 gstree upgrade
 ```
 
-This pulls the latest source from `~/.local/share/gstree` and reinstalls the
-tool. Override the repo path with the `GSTREE_REPO_PATH` environment variable:
+Override the repo path with `GSTREE_REPO_PATH` if you cloned elsewhere:
 
 ```bash
 GSTREE_REPO_PATH=/custom/path/gstree gstree upgrade
 ```
 
-## Tests
+## Contributing
 
-```bash
-PYTHONPATH=src python3 -m unittest discover -s tests -v
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md).
