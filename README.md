@@ -5,12 +5,12 @@
 `gstree` scans a workspace directory for git repositories and shows their status as a compact tree.
 
 ```
-source
-├── api          [main] ~2 ?1
-├── frontend     [main] +3 ~1
-├── infra        [main] clean
-│   └── modules  [main] ↓2
-└── tools        [feat/login] ~1 ↑1
+projects
+├── aurora       [main] ~2 ?1
+├── bonsai       [main] +3 ~1
+├── cedar        [main] clean
+│   └── roots    [main] ↓2
+└── drift        [feat/glow] ~1 ↑1
 ```
 
 ## Features
