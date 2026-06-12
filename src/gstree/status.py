@@ -14,7 +14,7 @@ def collect_repo_status(path: Path, fetch: bool = False) -> RepoStatus:
     if fetch:
         _git_optional(path, 'fetch', '--all')
     status_lines = _git(path, 'status', '--porcelain').splitlines()
-    staged, modified, untracked = _count_worktree_changes(status_lines)
+    staged, modified, untracked = parse_porcelain(status_lines)
     tracking_ref = _git_optional(path, 'rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}')
     tracking = tracking_ref is not None
     ahead = 0
@@ -37,11 +37,12 @@ def collect_repo_status(path: Path, fetch: bool = False) -> RepoStatus:
     )
 
 
-def _count_worktree_changes(status_lines: list[str]) -> tuple[int, int, int]:
+def parse_porcelain(lines: list[str]) -> tuple[int, int, int]:
+    """Return (staged, modified, untracked) counts from git status --porcelain output."""
     staged = 0
     modified = 0
     untracked = 0
-    for line in status_lines:
+    for line in lines:
         if line.startswith('??'):
             untracked += 1
             continue
