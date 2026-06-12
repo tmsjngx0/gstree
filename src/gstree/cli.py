@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -34,7 +35,7 @@ def main() -> int:
     args = build_parser().parse_args()
     root = Path(args.path).resolve()
 
-    from .renderer import render_text_report
+    from .renderer import Palette, render_text_report
     from .scanner import scan_workspace
 
     try:
@@ -48,5 +49,6 @@ def main() -> int:
     if args.json:
         print(json.dumps({"root": str(root), "repos": [repo.to_dict() for repo in repos]}, indent=2))
     else:
-        print(render_text_report(root, repos))
+        palette = Palette(color=os.environ.get("NO_COLOR") is None)
+        print(render_text_report(root, repos, palette))
     return 0
