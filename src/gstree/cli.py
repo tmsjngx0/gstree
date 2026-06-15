@@ -11,38 +11,49 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="gstree",
         description="Workspace git scanner and manager",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=(
-            "commands:\n"
-            "  upgrade  Pull latest source and reinstall gstree\n"
-        ),
     )
     parser.add_argument("path", nargs="?", default=".", help="Root directory to scan")
     parser.add_argument("-d", "--depth", type=int, default=2, help="Maximum scan depth")
     parser.add_argument("-j", "--json", action="store_true", help="Emit JSON instead of tree output")
     parser.add_argument("--dirty", action="store_true", help="Show only dirty repositories")
     parser.add_argument("--fetch", action="store_true", help="Run git fetch --all in each repo before collecting status")
+    parser.add_argument("--upgrade", action="store_true", help="Pull latest source and reinstall gstree")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser
 
 
 def main() -> int:
-    if len(sys.argv) > 1 and sys.argv[1] == "upgrade":
+    try:
+        return _run()
+    except KeyboardInterrupt:
+        sys.stderr.write("gstree: interrupted\n")
+        return 130
+    except Exception as exc:
+        sys.stderr.write(f"gstree: error: {exc}\n")
+        return 1
+
+
+def _run() -> int:
+    args = build_parser().parse_args()
+
+    if args.upgrade:
         from .upgrade import cmd_upgrade
 
         return cmd_upgrade()
 
-    args = build_parser().parse_args()
     root = Path(args.path).resolve()
+
+    if not root.exists():
+        sys.stderr.write(f"gstree: error: directory not found: {root}\n")
+        return 1
+    if not root.is_dir():
+        sys.stderr.write(f"gstree: error: not a directory: {root}\n")
+        return 1
 
     from .renderer import Palette, render_text_report
     from .scanner import scan_workspace
 
-    try:
-        repos = scan_workspace(root, args.depth, args.fetch)
-    except KeyboardInterrupt:
-        sys.stderr.write("gstree: interrupted\n")
-        return 130
+    repos = scan_workspace(root, args.depth, args.fetch)
 
     if args.dirty:
         repos = [repo for repo in repos if repo.dirty]

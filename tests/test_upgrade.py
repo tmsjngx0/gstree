@@ -49,7 +49,7 @@ class GstreeUpgradeTest(unittest.TestCase):
 
             import subprocess
             result = subprocess.run(
-                [sys.executable, "-m", "gstree", "upgrade"],
+                [sys.executable, "-m", "gstree", "--upgrade"],
                 capture_output=True, text=True, env=env,
             )
 
