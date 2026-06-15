@@ -48,10 +48,10 @@ def _collect_safe(path: Path, fetch: bool) -> RepoStatus | None:
     try:
         return collect_repo_status(path, fetch)
     except subprocess.TimeoutExpired:
-        print(f"gstree: warning: timed out reading {path}", file=sys.stderr)
+        sys.stderr.write(f"gstree: warning: timed out reading {path}\n")
         return None
-    except Exception as exc:
-        print(f"gstree: warning: skipped {path}: {exc}", file=sys.stderr)
+    except (subprocess.CalledProcessError, OSError, ValueError) as exc:
+        sys.stderr.write(f"gstree: warning: skipped {path}: {exc}\n")
         return None
 
 

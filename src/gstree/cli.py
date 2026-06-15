@@ -41,6 +41,10 @@ def _run() -> int:
 
         return cmd_upgrade()
 
+    if args.depth < 1:
+        sys.stderr.write("gstree: error: depth must be at least 1\n")
+        return 1
+
     root = Path(args.path).resolve()
 
     if not root.exists():

@@ -26,39 +26,39 @@ def cmd_upgrade() -> int:
         repo = detected or Path(_GSTREE_REPO_DEFAULT).expanduser().resolve()
 
     if not (repo / ".git").exists():
-        print(f"gstree: error: gstree repo not found at {repo}", file=sys.stderr)
-        print(f"gstree: set {_GSTREE_REPO_ENV} to override the default path", file=sys.stderr)
+        sys.stderr.write(f"gstree: error: gstree repo not found at {repo}\n")
+        sys.stderr.write(f"gstree: set {_GSTREE_REPO_ENV} to override the default path\n")
         return 1
 
-    print(f"gstree: pulling latest from {repo}...")
+    sys.stderr.write(f"gstree: pulling latest from {repo}...\n")
     pull = subprocess.run(
         ["git", "-C", str(repo), "pull"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, timeout=60,
     )
     if pull.stdout:
-        print(pull.stdout, end="")
+        sys.stdout.write(pull.stdout)
     if pull.returncode != 0:
-        print(pull.stderr, file=sys.stderr, end="")
+        sys.stderr.write(pull.stderr)
         return pull.returncode
 
-    print("gstree: reinstalling tool...")
+    sys.stderr.write("gstree: reinstalling tool...\n")
     reinstall = subprocess.run(
         ["uv", "tool", "upgrade", "gstree", "--reinstall"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, timeout=120,
     )
     if reinstall.stdout:
-        print(reinstall.stdout, end="")
+        sys.stdout.write(reinstall.stdout)
     if reinstall.returncode != 0:
-        print(reinstall.stderr, file=sys.stderr, end="")
+        sys.stderr.write(reinstall.stderr)
         return reinstall.returncode
 
     verify = subprocess.run(
         ["gstree", "--version"],
-        capture_output=True, text=True,
+        capture_output=True, text=True, timeout=10,
     )
     if verify.returncode == 0:
-        print(f"\u2713 {verify.stdout.strip()}")
+        sys.stdout.write(f"\u2713 {verify.stdout.strip()}\n")
     else:
-        print("gstree: upgrade complete (verify with gstree --version)")
+        sys.stdout.write("gstree: upgrade complete (verify with gstree --version)\n")
 
     return 0

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from .models import RepoStatus
@@ -43,6 +44,8 @@ def parse_porcelain(lines: list[str]) -> tuple[int, int, int]:
     modified = 0
     untracked = 0
     for line in lines:
+        if len(line) < 2:
+            continue
         if line.startswith('??'):
             untracked += 1
             continue
@@ -80,5 +83,8 @@ def _git_optional(path: Path, *args: str) -> str | None:
         if result.returncode != 0:
             return None
         return result.stdout.strip()
-    except (subprocess.TimeoutExpired, OSError):
+    except subprocess.TimeoutExpired:
+        sys.stderr.write(f"gstree: warning: git timed out in {path}\n")
+        return None
+    except OSError:
         return None
