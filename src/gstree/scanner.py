@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -45,7 +47,11 @@ def _find_repos(path: Path, depth: int, max_depth: int, repo_paths: list[Path]) 
 def _collect_safe(path: Path, fetch: bool) -> RepoStatus | None:
     try:
         return collect_repo_status(path, fetch)
-    except Exception:
+    except subprocess.TimeoutExpired:
+        print(f"gstree: warning: timed out reading {path}", file=sys.stderr)
+        return None
+    except Exception as exc:
+        print(f"gstree: warning: skipped {path}: {exc}", file=sys.stderr)
         return None
 
 
