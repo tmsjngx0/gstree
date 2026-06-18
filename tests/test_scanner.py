@@ -1,3 +1,5 @@
+import contextlib
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -51,6 +53,26 @@ class GstreeScannerTest(unittest.TestCase):
                     str((root / "app" / "vendor" / "module").resolve()),
                 ],
             )
+
+    def test_scan_workspace_skips_unreadable_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir) / "workspace"
+            root.mkdir()
+            init_repo(root / "app")
+            blocked = root / "blocked"
+            blocked.mkdir()
+            blocked.chmod(0)
+
+            stderr = io.StringIO()
+            try:
+                with contextlib.redirect_stderr(stderr):
+                    repos = scan_workspace(root, max_depth=2)
+            finally:
+                blocked.chmod(0o755)
+
+            self.assertEqual([repo.name for repo in repos], ["app"])
+            self.assertIn("warning: skipped", stderr.getvalue())
+            self.assertIn(str(blocked), stderr.getvalue())
 
 
 if __name__ == "__main__":

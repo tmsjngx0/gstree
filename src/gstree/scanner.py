@@ -30,14 +30,30 @@ def scan_workspace(root: Path, max_depth: int, fetch: bool = False) -> list[Repo
 
 
 def _find_repos(path: Path, depth: int, max_depth: int, repo_paths: list[Path]) -> None:
-    if _is_git_repo(path):
-        repo_paths.append(path)
+    try:
+        if _is_git_repo(path):
+            repo_paths.append(path)
+    except OSError as exc:
+        _warn_skip(path, exc)
+        return
 
     if depth >= max_depth:
         return
 
-    for child in sorted(path.iterdir(), key=lambda candidate: candidate.name):
-        if not child.is_dir():
+    try:
+        children = sorted(path.iterdir(), key=lambda candidate: candidate.name)
+    except OSError as exc:
+        _warn_skip(path, exc)
+        return
+
+    for child in children:
+        try:
+            is_dir = child.is_dir()
+        except OSError as exc:
+            _warn_skip(child, exc)
+            continue
+
+        if not is_dir:
             continue
         if child.name in SKIP_DIRS:
             continue
@@ -51,8 +67,12 @@ def _collect_safe(path: Path, fetch: bool) -> RepoStatus | None:
         sys.stderr.write(f"gstree: warning: timed out reading {path}\n")
         return None
     except (subprocess.CalledProcessError, OSError, ValueError) as exc:
-        sys.stderr.write(f"gstree: warning: skipped {path}: {exc}\n")
+        _warn_skip(path, exc)
         return None
+
+
+def _warn_skip(path: Path, exc: OSError | ValueError) -> None:
+    sys.stderr.write(f"gstree: warning: skipped {path}: {exc}\n")
 
 
 def _is_git_repo(path: Path) -> bool:

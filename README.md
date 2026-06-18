@@ -2,8 +2,7 @@
 
 [![CI](https://github.com/tmsjngx0/gstree/actions/workflows/ci.yml/badge.svg)](https://github.com/tmsjngx0/gstree/actions/workflows/ci.yml)
 
-`gstree` scans a workspace directory for Git repositories and shows their status
-as a compact tree.
+`gstree` scans a workspace directory for Git repositories and shows their status as a compact tree.
 
 ```text
 projects
@@ -16,12 +15,12 @@ projects
 
 ## Features
 
-- Tree view for all Git repos in a directory, including submodules
+- Tree view of all Git repos in a directory, including submodules
 - Compact status tokens for staged, modified, untracked, ahead, and behind state
 - `--dirty` flag to show only repositories with uncommitted changes
 - JSON output for downstream scripting
 - Zero runtime dependencies beyond Python stdlib and `git`
-- `gstree upgrade` for source-installed checkouts
+- Built-in `--upgrade` flow for published `pip` and `uv` installs plus source checkouts
 
 ## Status Tokens
 
@@ -40,6 +39,12 @@ projects
 
 ```bash
 pip install gstree
+```
+
+**Published release with `uv tool install`:**
+
+```bash
+uv tool install gstree
 ```
 
 **Published release with `uvx` (no install):**
@@ -80,23 +85,40 @@ gstree --version
 
 ## Upgrade
 
-For source installs from a cloned checkout:
+If `gstree` was installed with `pip install gstree`, upgrade in place:
 
 ```bash
-gstree upgrade
+gstree --upgrade
+```
+
+If `gstree` was installed with `uv tool install gstree`, the same command delegates to `uv tool upgrade gstree`:
+
+```bash
+gstree --upgrade
+```
+
+If you run `gstree` via `uvx`, request the latest published version explicitly:
+
+```bash
+uvx gstree@latest ~/source
+```
+
+For source installs from a cloned checkout, `gstree --upgrade` pulls the repo and reinstalls the tool:
+
+```bash
+gstree --upgrade
 ```
 
 Override the repo path with `GSTREE_REPO_PATH` if you cloned elsewhere:
 
 ```bash
-GSTREE_REPO_PATH=/custom/path/gstree gstree upgrade
+GSTREE_REPO_PATH=/custom/path/gstree gstree --upgrade
 ```
 
 ## Release
 
 Tagged releases publish to PyPI through GitHub Actions Trusted Publishing.
-Use the publish workflow's manual dispatch to test against TestPyPI before
-pushing a release tag.
+Use the publish workflow's manual dispatch to test against TestPyPI before pushing a release tag.
 
 ## Contributing
 

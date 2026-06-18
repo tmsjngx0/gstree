@@ -17,7 +17,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("-j", "--json", action="store_true", help="Emit JSON instead of tree output")
     parser.add_argument("--dirty", action="store_true", help="Show only dirty repositories")
     parser.add_argument("--fetch", action="store_true", help="Run git fetch --all in each repo before collecting status")
-    parser.add_argument("--upgrade", action="store_true", help="Pull latest source and reinstall gstree")
+    parser.add_argument(
+        "--upgrade",
+        action="store_true",
+        help="Upgrade gstree using the right path for source, pip, or uv installs",
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return parser
 
